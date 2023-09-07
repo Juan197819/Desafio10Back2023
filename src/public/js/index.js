@@ -35,17 +35,21 @@ if (tbody) {
         tbody.innerHTML = i.join('')
     })
 }
-/* ---------------- FUNCION AUTOINVOCADA QUE TOMA EL EMAIL DEL USUARIO LOGUEADO DESDE EL H1 PARA ARMAR UN BOTON CON LA RUTA DE PRODUCTOS DEL CARRITO ESPECIFICO PARA ESE USUARIO---------------- */
+/* ---------------- FUNCION AUTOINVOCADA QUE TOMA EL EMAIL DEL USUARIO LOGUEADO DESDE EL ATRIBUTO "data-email" del H1 PARA ARMAR UN BOTON CON LA RUTA DE PRODUCTOS DEL CARRITO ESPECIFICO PARA ESE USUARIO---------------- */
 let nav
 (async function () {
 
     const h1 = document.querySelector('header div h1'); 
-    const email = h1.getAttribute('data-email') //EN EL H1 DEL HTML CREÉ UN data-email= {email dinamico de usuario desde variable de handlebars} Y ACA LO RECUPERO
     nav = document.getElementById('nav'); 
-    
-    let idCart = localStorage.getItem(email) // YA CON ESE EMAIL VERIFICO SI HAY ALGUN ID DE CARRITO EN EL LOCALSTORAGE
-
-    nav.innerHTML = `<a id="botonCarrito" href="/carts/${idCart||"cartEmpty"}" class="botonLogout" >Ir al carrito</a>` //SI ES LA PRIMERA VEZ DEL USUARIO EL idCart VA A SER NULL POR ENDE LA RUTA SE ARMA CON cartEmpty 
+    if (h1) {
+        const email = h1.getAttribute('data-email') //EN EL H1 DEL HTML CREÉ UN data-email= {email dinamico de usuario desde variable de handlebars} Y ACA LO RECUPERO        
+        console.log(email)
+        let idCart = localStorage.getItem(email) // YA CON ESE EMAIL VERIFICO SI HAY ALGUN ID DE CARRITO EN EL LOCALSTORAGE
+        console.log(idCart)
+        
+        nav.innerHTML = `<a id="botonCarrito" href="/carts/${idCart || "cartEmpty"}" class="botonLogout" >Ir al carrito</a>`
+        //SI ES LA PRIMERA VEZ DEL USUARIO EL idCart VA A SER NULL POR ENDE LA RUTA SE ARMA CON cartEmpty
+    }
 })()
 
 /* ---------------- FUNCION PARA AGREGAR PRODUCTOS AL CARRITO EN NAVEGADOR---------------- */
@@ -60,7 +64,8 @@ async function agregarAlCarrito(pid, email) {
            method: 'POST'
          })
         let newCart = await response.json()
-        idCart =newCart._id
+        idCart = newCart._id
+        console.log('idcart',idCart)
         //GUARDADO DE ID DE CARRITO PARA EL RESTO DE PETICIONES
         localStorage[email] = idCart
         alert('Carrito creado ok')

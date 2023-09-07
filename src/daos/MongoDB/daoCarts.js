@@ -1,3 +1,4 @@
+import daoProducts from "./daoProducts.js"
 import { ModelCarts } from "./models/modelCarts.js"
 
 class DaoCarts {
@@ -93,6 +94,51 @@ class DaoCarts {
             throw (error)   
         }
     }
+    async buyCart(cid){
+        try {
+            const cart = await this.#getCartById(cid)
+            if (!cart.products.length) {
+                throw new Error('The cart was already empty')
+            }
+            else {
+                let productsToBuy = []
+                let productsOutOfStock = []
+                let amount = 0
+                for (const prod of cart.products) {
+                    const product = await daoProducts.getProductById(prod.product)
+                    if (prod.quantity <= product.stock) {
+                        product.stock = product.stock - prod.quantity
+                        //product.save()
+                        productsToBuy.push(prod)
+                        amount += product.price* prod.quantity
+                    } else {
+                        productsOutOfStock.push(prod)
+                    }
+                }
+                return { productsToBuy, productsOutOfStock, amount}
+            }
+        } catch (error) {
+            throw (error)   
+        }
+    }
+    async buyCart2(cid){
+        try {
+            let amount = 0
+            let productsOutOfStock = []
+            const {products} = await this.getProdToCart(cid)
+            const productsToBuy = products.filter(p => {
+                if (p.quantity <= p.product.stock) {
+                    amount += p.product.price * p.quantity
+                    return p
+                }
+                productsOutOfStock.push(p)
+            })
+            return { productsToBuy, productsOutOfStock, amount }
+        } catch (error) {
+            throw (error)   
+        }
+    }
+
 }
 const daoCart = new DaoCarts()
 

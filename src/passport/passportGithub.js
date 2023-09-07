@@ -1,12 +1,13 @@
 import passport from "passport";
 import { Strategy as StrategyGithub } from "passport-github2";
 import { isValidPass, serviceUsers } from "../services/serviceUsers.js";
+import { dtoProfile } from "../dtos/dtoProfile.js";
 
 //!    CREDENCIALES PROPIAS DE GITHUB (ME DA ERROR DE PERMISOS)
 // const strategyOptions = {
 //     clientID: 'Iv1.3ed8e1a0ec00a25e',
 //     clientSecret: '47b38612eeda8053881d4d8cc6d9179db5758d8f ',
-//     callbackURL: "http://127.0.0.1:8080/users/profile-github"
+//     callbackURL: "http://localhost:8080/users/profile-github"
 // }
 //*CREDENCIALES DE GITHUB DE MAURICIO (USE LAS DEL PROFE Y ANDA PERFECTO)
 const strategyOptions = {
@@ -18,8 +19,9 @@ const strategyOptions = {
 async function loginGithub(accessToken, refreshToken, profile, done) {
     console.log('accessToken', accessToken)
 
-    const user = await serviceUsers.serviceGetByEmail(profile._json.email)
+    let user = await serviceUsers.serviceGetByEmail(profile._json.email)
     if (user) {
+        user = dtoProfile(user)
         return done(null, user)
     }
     let name = profile._json.name.split(' ')

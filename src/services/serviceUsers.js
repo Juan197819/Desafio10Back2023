@@ -1,4 +1,4 @@
-import config from '../config/config.js';
+import config from '../config/configEnv.js';
 import bcrypt from 'bcrypt'
 const PERSISTENCIA = config.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
 const {default: daoUsers} = await import(`../daos/${PERSISTENCIA}/daoUsers.js`)

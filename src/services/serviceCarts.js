@@ -1,7 +1,7 @@
-import config from '../config/config.js';
-const PERSISTENCIA = config.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
+import config from '../config/configEnv.js';
+import {dtoTicket} from '../dtos/dtoTicket.js'
 const {default: daoCart} = await import(`../daos/${config.PERSISTENCIA}/daoCarts.js`)
-
+const {  daoTickets } = await import(`../daos/MongoDB/daoTickets.js`)
 class ServiceCarts {
     async serviceAddCart (){
         try {
@@ -55,6 +55,15 @@ class ServiceCarts {
         try {
             const cartUpdated = await daoCart.deleteAllProductsToCart(cid,pid)
             return cartUpdated
+        } catch (error) {
+            throw error
+        }
+    }
+    async serviceBuyCart (cid, user){
+        try {
+            const { productsToBuy, productsOutOfStock, amount } = await daoCart.buyCart2(cid)
+            const newTicket = dtoTicket(amount, user)           
+            return await daoTickets.addTickets(newTicket)
         } catch (error) {
             throw error
         }

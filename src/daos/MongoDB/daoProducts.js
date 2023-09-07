@@ -13,7 +13,7 @@ class DaoProducts {
     async getProducts(limit = 10, page = 1, sort, query = {}, value) {
         try {
             //"query" trae un objeto con todos los filtros de campos que puse en los query params
-            //asi se puede filtrar por el campo que quiera (title, category, stock, etc) e incluso usar varios a la vez, si viene vacio trae todo.
+            //asi se puede filtrar por el campo que quiera (title, category, stock, etc) e incluso usar varios a la vez, si viene vacio trae todos los productos.
 
             console.log('sort', sort, 'limit', limit, 'page', page, 'query',query)
             //Si el query params p/ ordenar ('sort') viene vacio no se ordena, con 1 ó -1 se ordena por precio ("price")
@@ -52,7 +52,7 @@ class DaoProducts {
             if(!product) throw new Error(`Product ID ${id} Not found`)
             return product
         } catch (error) {
-            if (error.name == 'CastError') throw new Error('Nonexistent product! (Incompleted ID)') 
+            if (error.name == 'CastError') throw new Error('Nonexistent Product! (Incompleted or incorrect ID)') 
             throw (error)   
         }
     }
@@ -62,6 +62,7 @@ class DaoProducts {
            if(!product) throw new Error(`Product ID ${id} Not found`)
            return (`Producto id ${id} modificado con exito`);
         } catch (error) {
+            if (error.name == 'CastError') throw new Error('Nonexistent Product! (Incompleted or incorrect ID)') 
             throw (error)   
         }
     }
@@ -71,6 +72,7 @@ class DaoProducts {
             if(!product) throw new Error(`Product ID ${id} Not found`)
             return (`Producto id ${id} eliminado con exito`);
         } catch (error) {
+            if (error.name == 'CastError') throw new Error('Nonexistent Product! (Incompleted or incorrect ID)') 
             throw (error)   
         }
     }

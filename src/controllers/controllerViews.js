@@ -2,21 +2,7 @@ import { serviceProducts } from "../services/serviceProducts.js"
 import { serviceCarts } from "../services/serviceCarts.js";
 import __dirname from "../../utils.js";
 import {io} from '../../app.js'
-
- function dtoViews(response) {
-    const prod=  response.payload.map(p=>{
-        return {
-            id:p._id,
-            title:p.title,
-            description:p.description,
-            price:p.price,
-            stock:p.stock, 
-            category:p.category,
-            thumbnail:p.thumbnail
-        } 
-    }) 
-    return prod
-}
+import { dtoProfile } from "../dtos/dtoProfile.js";
 
 class ControllerViews{
     async controllerIndex(req, res, next) {
@@ -26,43 +12,47 @@ class ControllerViews{
             next(error)   
         }
      }
-
     async controllerHome(req, res, next){
         try {
-            const {limit, page, sort, code, ...query} = req.query
-            const response = await serviceProducts.serviceGetProducts(limit, page, sort, query)
-            const products = dtoViews(response)
-            req.session.user = req.user
-            res.status(200).render('home', { products,...req.user._doc })
+            console.log('reqhome',req.user)
+            let {query, user} = req
+            const products = await serviceProducts.serviceGetProducts({...query,limit:query.limit||100})
+            req.session.user = user
+            res.status(200).render('home', { products,...user})
         } catch (error) { 
             next(error)   
         }
     }
     async controllerRealtimeproducts(req, res, next){
-        let {limit, page, sort, ...query} = req.query
         try {            
+            const query = { ...req.query, limit: req.query.limit || 100}
             io.on('connection', async socket=>{
                 console.log('Usuario conectado')
-                const response = await serviceProducts.serviceGetProducts(limit=100, page, sort, query)
-                socket.emit('messageServer', dtoViews(response))
+                const products = await serviceProducts.serviceGetProducts(query)
+                socket.emit('messageServer', await products)
                 
                 socket.on('messageClient', async product=>{
                     await serviceProducts.serviceAddProduct(product)
-                    const response = await serviceProducts.serviceGetProducts(limit, page, sort, query)
-                    io.emit('messageServer', dtoViews(response))
+                    const products = await serviceProducts.serviceGetProducts(query)
+                    io.emit('messageServer', products)
                 })
             })
-            res.status(200).render('realtimeproducts.handlebars', { ...req.user._doc })
+            res.status(200).render('realtimeproducts.handlebars', { ...req.user })
         } catch (error) {
             console.log(error)
         }
     }
-    async controllerProducts(req, res, next){
-        const {limit, page, sort, ...query} = req.query
+    async controllerProductsInTarget(req, res, next){
         try {
-            const response = await serviceProducts.serviceGetProducts(limit, page, sort, query)
-            const products = dtoViews(response)
-            res.status(200).render('products', { products, ...response, ...req.user._doc })
+            const response = await serviceProducts.serviceGetProductsWithPaginate(req.query)
+            res.status(200).render('products', { ...response, ...req.user})
+        } catch (error) { 
+            next(error)
+        }
+    }
+    async controllerProfile(req, res, next){
+        try {
+            res.status(200).render('current', req.user)
         } catch (error) { 
             next(error)
         }
@@ -70,7 +60,6 @@ class ControllerViews{
     async controllerViewCart(req, res, next){
         try {
             const { cid } = req.params
-            console.log('cid', Boolean(cid))
             let newMap;
             if (cid !='cartEmpty') {
                 const products = await serviceCarts.serviceGetProdToCart(cid)
@@ -80,7 +69,7 @@ class ControllerViews{
                     }
                 })
             }
-            res.status(200).render('cart', { newMap, ...req.user._doc })
+            res.status(200).render('cart', { newMap, ...req.user})
         } catch (error) { 
             next(error)
         }

@@ -1,4 +1,5 @@
-import config from '../config/config.js';
+import config from '../config/configEnv.js';
+import { repository } from '../repository/repository.js';
 const PERSISTENCIA = config.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
 const {default: daoProducts} = await import(`../daos/${PERSISTENCIA}/daoProducts.js`)
 console.log('Persistencia' ,PERSISTENCIA)
@@ -13,14 +14,23 @@ class ServiceProducts {
             throw error
         }
     }
-    async serviceGetProducts (limit, page, sort, query){
+    async serviceGetProducts (reqQuery){
         try {
-            const productos = await daoProducts.getProducts(limit, page, sort, query)
+            const productos = await repository.repositoryGetProducts(reqQuery)
             return productos
         } catch (error) {
             throw error
         }
     }
+    async serviceGetProductsWithPaginate (query){
+        try {
+            const productosWithPaginate = await repository.repositoryGetProductsWithPaginate(query)
+            return productosWithPaginate
+        } catch (error) {
+            throw error
+        }
+    }
+
     async serviceGetProductById (id){
         try {
             const product = await daoProducts.getProductById(id)

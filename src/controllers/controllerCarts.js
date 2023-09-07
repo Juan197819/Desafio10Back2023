@@ -16,6 +16,7 @@ class ControllerCarts {
             if (!products.length) throw new Error("There are no products in your cart yet")
             res.status(200).json(products)
         } catch (error) {
+            
             next(error)
         }
     }
@@ -63,6 +64,16 @@ class ControllerCarts {
             const {cid, pid} = req.params
             const cart = await serviceCarts.serviceDeleteAllProductsToCart(cid,pid)
             res.status(200).json(cart)
+        } catch (error) {
+            next(error)
+        }
+    }
+    async controllerBuyCart (req, res, next){
+        try {
+            const {cid} = req.params
+            const ticket = await serviceCarts.serviceBuyCart(cid, req.user)
+            console.log('ticket', ticket)
+            res.status(200).json(ticket)
         } catch (error) {
             next(error)
         }
