@@ -71,9 +71,8 @@ class ControllerCarts {
     async controllerBuyCart (req, res, next){
         try {
             const {cid} = req.params
-            const ticket = await serviceCarts.serviceBuyCart(cid, req.user)
-            console.log('ticket', ticket)
-            res.status(200).json(ticket)
+            const response = await serviceCarts.serviceBuyCart(cid, req.user)
+            res.status(200).json(response)
         } catch (error) {
             next(error)
         }

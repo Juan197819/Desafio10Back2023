@@ -13,9 +13,9 @@ async function sendEmail (subject, bodyMail){
     try {
         const info = await transport.sendMail({
             from: config.EMAIL_TO_SEND,
-            to: config.EMAIL_TO_RECEIVE_FOR_TEST,
+            to: config.EMAIL_TO_RECEIVE_FOR_TEST||bodyMail.purchaser, 
             subject: subject,
-            html: bodyMail
+            html: purchaseData(bodyMail)
             }       
         )
         console.log(info);
@@ -23,14 +23,37 @@ async function sendEmail (subject, bodyMail){
         console.log(error);
     }
 }
-export const datosUsuarioNuevo = (datosUsuarioNuevo) => {
+export const purchaseData = (purchaseData) => {
+    console.log(purchaseData)
+    
     return `
-    <h1>Usuario Nuevo</h1>
-    <h2>Nombre Completo: ${datosUsuarioNuevo.nombre} ${datosUsuarioNuevo.apellido}</h2>
-    <h2>Fecha de Nacimiento: ${datosUsuarioNuevo.fechaNacimiento}</h2>
-    <h2>Direccion: ${datosUsuarioNuevo.direccion}</h2>
-    <h2>Telefono: ${datosUsuarioNuevo.telefono}</h2>
-    <h2>Email: ${datosUsuarioNuevo.username}</h2>
+    <h1>Hola ${purchaseData.nombre.toLocaleUpperCase()} ${purchaseData.apellido.toLocaleUpperCase()}</h1>
+    <h2>Tu compra fue aprobada!!</h2>
+    <h2>Detalle de la compra:</h2>
+         <table style='padding: 8px 20px; border-collapse:collapse; text-align: center; border: 2px solid rgb(68, 64, 64);'>
+        <thead>
+            <tr>
+                <th style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">Producto</th>
+                <th style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">Precio</th>
+                <th style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+        ${purchaseData.articleBuyed.map(p => {
+            return `      
+            <tr>
+                <td style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">${p.product}</td>
+                <td style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">$${p.price.toFixed(2)}</td>
+                <td style="padding: 8px 20px; border:2px solid rgb(68, 64, 64); border-collapse: collapse;text-align:center;">${p.quantity}</td>
+            </tr>
+        `
+        }).join("")}
+        </tbody>    
+        </table>
+    <h3>N° de Comprobante: ${purchaseData.code}</h3>
+    <h3>Monto Total: $${purchaseData.amount.toFixed(2) }</h3>
+    <h3>Fecha y hora de transaccion: ${purchaseData.purchase_datetime}</h3>
+    <h3>Email de contacto: ${purchaseData.purchaser}</h3>
     `
 }
 export default sendEmail

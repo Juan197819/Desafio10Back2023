@@ -1,7 +1,9 @@
 import config from '../config/configEnv.js';
+import sendEmail from '../config/configMail.js';
+import { dtoProduct } from '../dtos/dtoProduct.js';
 import {dtoTicket} from '../dtos/dtoTicket.js'
 const {default: daoCart} = await import(`../daos/${config.PERSISTENCIA}/daoCarts.js`)
-const {  daoTickets } = await import(`../daos/MongoDB/daoTickets.js`)
+const {daoTickets} = await import(`../daos/${config.PERSISTENCIA}/daoTickets.js`)
 class ServiceCarts {
     async serviceAddCart (){
         try {
@@ -61,9 +63,31 @@ class ServiceCarts {
     }
     async serviceBuyCart (cid, user){
         try {
-            const { productsToBuy, productsOutOfStock, amount } = await daoCart.buyCart2(cid)
-            const newTicket = dtoTicket(amount, user)           
-            return await daoTickets.addTickets(newTicket)
+            const { productsToBuy, productsOutOfStock, amount } = await daoCart.buyCart(cid)
+            let articleBuyed= []
+            if (productsToBuy.length) {
+                const ticket = dtoTicket(amount, user)
+                await daoTickets.addTickets(ticket)
+                await this.serviceUpdateAllProductsToCart(cid, productsOutOfStock)                
+                articleBuyed = dtoProduct(productsToBuy)
+                await sendEmail('Venta Online: Transacción Aprobada', { ...ticket, ...user, articleBuyed })
+            }
+            let message
+            let msg = `Se le ha enviado un correo a su casilla registrada ${user.email} con los datos de la compra`
+
+            if (!productsToBuy.length) {
+                message= `Transaccion rechazada, actualmente no hay stock de el/los producto/s solicitado/s.`
+            } else if (productsOutOfStock.length){
+                message = `Transaccion realizada parcialmente, actualmente algun/os producto/s solicitado/s se encuentran sin stock. ${msg}`
+            } else {
+                message = `Transaccion completada con exito!! ${msg}`
+            }
+
+            return {
+                message,
+                articleBuyed,
+                articleOutOfStock: dtoProduct(productsOutOfStock)
+            }
         } catch (error) {
             throw error
         }
