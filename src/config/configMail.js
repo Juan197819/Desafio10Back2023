@@ -24,8 +24,6 @@ async function sendEmail (subject, bodyMail){
     }
 }
 export const purchaseData = (purchaseData) => {
-    console.log(purchaseData)
-    
     return `
     <h1>Hola ${purchaseData.nombre.toLocaleUpperCase()} ${purchaseData.apellido.toLocaleUpperCase()}</h1>
     <h2>Tu compra fue aprobada!!</h2>

@@ -38,12 +38,10 @@ passport.use('login', new StrategyLocal(strategyOptions, login))
 passport.use('register', new StrategyLocal(strategyOptions, register))
 
 passport.serializeUser((user, done) => {
-    console.log('Serialize', user)
     done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-    console.log('deserialize', id)
     const user = await repository.repositoryGetUsersById(id);
     return done(null, user);
 });

@@ -17,8 +17,6 @@ const strategyOptions = {
 }
 
 async function loginGithub(accessToken, refreshToken, profile, done) {
-    console.log('accessToken', accessToken)
-
     let user = await serviceUsers.serviceGetByEmail(profile._json.email)
     if (user) {
         user = dtoProfile(user)

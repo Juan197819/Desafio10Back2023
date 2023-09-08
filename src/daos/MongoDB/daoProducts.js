@@ -78,5 +78,4 @@ class DaoProducts {
     }
 }
 const daoProducts = new DaoProducts()
-console.log('daoProducts',daoProducts)
 export default daoProducts

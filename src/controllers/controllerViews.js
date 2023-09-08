@@ -14,7 +14,6 @@ class ControllerViews{
      }
     async controllerHome(req, res, next){
         try {
-            console.log('reqhome',req.user)
             let {query, user} = req
             const products = await serviceProducts.serviceGetProducts({...query,limit:query.limit||100})
             req.session.user = user
@@ -39,7 +38,7 @@ class ControllerViews{
             })
             res.status(200).render('realtimeproducts.handlebars', { ...req.user })
         } catch (error) {
-            console.log(error)
+            next(error)   
         }
     }
     async controllerProductsInTarget(req, res, next){

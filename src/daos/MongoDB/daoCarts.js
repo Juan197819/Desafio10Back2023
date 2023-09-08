@@ -5,7 +5,6 @@ class DaoCarts {
     async #getCartById(id){
         try {
             const cart = await ModelCarts.findById(id)
-            console.log('cart Encontrado: ', cart)
             if(!cart) throw new Error('Nonexistent cart!')
             return cart
         } catch (error) {
