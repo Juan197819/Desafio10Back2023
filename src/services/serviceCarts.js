@@ -2,8 +2,8 @@ import config from '../config/configEnv.js';
 import sendEmail from '../config/configMail.js';
 import { dtoProduct } from '../dtos/dtoProduct.js';
 import {dtoTicket} from '../dtos/dtoTicket.js'
-const {default: daoCart} = await import(`../daos/${config.PERSISTENCIA}/daoCarts.js`)
-const {daoTickets} = await import(`../daos/${config.PERSISTENCIA}/daoTickets.js`)
+const {default: daoCart} = await import(`../daos/${config.PERSISTENCE}/daoCarts.js`)
+const {daoTickets} = await import(`../daos/${config.PERSISTENCE}/daoTickets.js`)
 class ServiceCarts {
     async serviceAddCart (){
         try {

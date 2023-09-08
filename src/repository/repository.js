@@ -1,7 +1,6 @@
 import config from '../config/configEnv.js';
 import { dtoProfile } from '../dtos/dtoProfile.js';
-const PERSISTENCIA = config.PERSISTENCIA
-const { default: daoProducts } = await import(`../daos/${PERSISTENCIA}/daoProducts.js`)
+const { default: daoProducts } = await import(`../daos/${config.PERSISTENCE}/daoProducts.js`)
 import { dtoViews } from "../dtos/dtoViews.js"
 import { serviceUsers } from '../services/serviceUsers.js';
 
@@ -28,7 +27,7 @@ class Repository {
 
     async repositoryGetProductsWithPaginate(reqQuery) {
         try {
-            let { limit, page, sort, code, ...query } = reqQuery
+            let { limit, page, sort, ...query } = reqQuery
             const response = await daoProducts.getProducts(limit, page, sort, query)
             const products = dtoViews(response)
             

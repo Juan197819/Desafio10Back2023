@@ -1,7 +1,6 @@
 import config from '../config/configEnv.js';
 import bcrypt from 'bcrypt'
-const PERSISTENCIA = config.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
-const {default: daoUsers} = await import(`../daos/${PERSISTENCIA}/daoUsers.js`)
+const { default: daoUsers } = await import(`../daos/${config.PERSISTENCE}/daoUsers.js`)
 
 function createHash(pass) {
     return bcrypt.hashSync(String(pass), bcrypt.genSaltSync(5))

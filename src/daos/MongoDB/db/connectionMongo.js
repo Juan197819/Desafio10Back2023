@@ -4,10 +4,10 @@ try {
     let url
     if (config.NODE_ENV=='development') {
         url = 'mongodb://localhost:27017/ecommerceLocal'
-        console.log('Local MongoDB database -- Development environment')
+        console.log('Wait...Local MongoDB database connecting...')
     } else {
         url=config.MONGO_ATLAS
-        console.log('MongoDB ATLAS database in the cloud -- Production environment')
+        console.log('Wait... MongoDB ATLAS database in the cloud connecting...')
     }
     await mongoose.connect(url)
     console.log('MongoDB Database connected!!')

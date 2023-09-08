@@ -1,8 +1,7 @@
 import config from '../config/configEnv.js';
 import { repository } from '../repository/repository.js';
-const PERSISTENCIA = config.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
-const {default: daoProducts} = await import(`../daos/${PERSISTENCIA}/daoProducts.js`)
-console.log('Persistencia' ,PERSISTENCIA)
+const { default: daoProducts } = await import(`../daos/${config.PERSISTENCE}/daoProducts.js`)
+console.log('Persistencia',config.PERSISTENCE)
 
 class ServiceProducts {
     async serviceAddProduct (product){
@@ -10,6 +9,7 @@ class ServiceProducts {
             const newProduct = await daoProducts.addProduct(product)
             return newProduct
         } catch (error) {
+            console.log('error MOngo',error)
             if (error.name == 'ValidationError') throw new Error('Error saving product, incomplete product data!') 
             throw error
         }

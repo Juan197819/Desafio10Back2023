@@ -1,8 +1,8 @@
 import 'dotenv/config'
-console.log('process', process.argv[2])
+console.log(`${process.env.NODE_ENV.toLocaleUpperCase()} environment`)
 export default {
     NODE_ENV: process.env.NODE_ENV,
-    PERSISTENCIA: process.env.PERSISTENCIA || process.argv[2],
+    PERSISTENCE: process.argv[2] || process.env.PERSISTENCE,
     MONGO_ATLAS: process.env.MONGO_ATLAS,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,

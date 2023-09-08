@@ -19,7 +19,6 @@ class DaoProducts {
             //Si el query params p/ ordenar ('sort') viene vacio no se ordena, con 1 ó -1 se ordena por precio ("price")
             const order= sort?{price:sort}:null
             const response = await ModelProducts.paginate(query,{page,limit, sort:order})
-
             //Iniciando con la  ruta http://localhost:8080/products en el navegador puedo usar los botones Anterior" y "Siguiente" para ver todas las paginas. 
 
             //la Variable "search" de abajo se usa para tomar todos los campos de filtro guardados en "query" (que vienen de los query params) y armar las rutas de "prevLink" y "nextLink" con los mismos filtros de la primer peticion.
